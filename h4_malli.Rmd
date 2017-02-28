@@ -1,0 +1,70 @@
+---
+title: 'Meteorologian ja säähavainnonteon perusteet 2017: Mallivastaukset, harjoitus
+  4'
+author: "Otso Peräkylä"
+date: "27 helmikuuta 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Tehtävä
+
+### a-kohta
+
+```{r heights, echo=FALSE}
+
+rspec = 287.058 # J/(kg·K)
+g = 9.81
+
+p1 = c(1000,925,850,700)
+p2 = c(925,850,700,500)
+
+T = c(286,276,269,255)
+
+dz = -rspec/g*T*log(p2/p1);
+
+z500 = sum(dz);
+
+choose_p = 1;
+choose_p_top = 4;
+
+```
+
+Kahden painepinnan ($p_1$ ja $p_2$, tässä esimerkiksi `r p1[choose_p]  ` hPa ja `r p2[choose_p]  ` hPa) välinen etäisyys saadaan integroimalla seuraavasti (luentokalvot):
+
+\begin{equation}
+z_{p_1 - p_2}  = z_{p_2} - z_{p_1} = -  \frac{R}{g} \int_{p_1}^{p_2} T d (\text{ln}p) =  -  \frac{R}{g} \overline{T} \text{ln}\Big( \frac{p_2}{p_1} \Big) 
+\end{equation}
+
+Tässä $\overline{T}$ on painepintojen välillä vallitsevan keskimääräinen lämpötila. Nyt kun meille on annettu erikseen neljän kerroksen tiedot, niin voimme laskea jokaisen kerroksen korkeuden erikseen, ja summata ne yhteen. Kun vielä tiedämme, että maanpintapaine on 1000 hPa (eli 1000 hPa painepinnan korkeus on 0 m), tulee 1000 hPa ja 500 hPa:n kerrosten välisestä etäisyydestä suoraan 500 hPa:n kerroksen korkeus. Esimerkiksi 1000 hPa ja 925 hPa painepinnan väliseksi etäisyydeksi saadaan:
+
+\begin{align}
+z_{`r p2[choose_p]  ` \text{ hPa}} - z_{`r p1[choose_p]  ` \text{ hPa}} &= -  \frac{R}{g} \overline{T} \text{ln}\Big( \frac{`r p2[choose_p]  ` \text{ hPa}}{`r p1[choose_p]  ` \text{ hPa}} \Big)  = -  \frac{287.058 \text{ J}\text{ kg}^{-1}\text{ K}^{-1}}{9.81 \text{ m}\text{ s}^{-2}} 286 \text{ K } \text{ln}\Big( \frac{`r p2[choose_p]  ` \text{ hPa}}{`r p1[choose_p]  ` \text{ hPa}} \Big) \nonumber \\ 
+&=`r floor(dz[choose_p])  `.`r formatC((dz[choose_p]-floor(dz[choose_p]))*1000, digits=3,format="fg", flag="#")`... \text{ m} \approx `r round(dz[choose_p])  ` \text{ m} 
+\end{align}
+
+Summaamalla loputkin vastaavasti lasketut etäisyydet saadaan `r p2[choose_p_top]  ` hPa painepinnan korkeudeksi
+
+
+\begin{align}
+z_{`r p2[choose_p_top]  ` \text{ hPa}} &= `r floor(dz[1])  `.`r formatC((dz[1]-floor(dz[1]))*1000, digits=3,format="fg", flag="#")`... \text{ m} + `r floor(dz[2])  `.`r formatC((dz[2]-floor(dz[2]))*1000, digits=3,format="fg", flag="#")`... \text{ m} + `r floor(dz[3])  `.`r formatC((dz[3]-floor(dz[3]))*1000, digits=3,format="fg", flag="#")`... \text{ m} + `r floor(dz[4])  `.`r formatC((dz[4]-floor(dz[4]))*1000, digits=3,format="fg", flag="#")`... \text{ m} \nonumber \\ 
+&=`r floor(sum(dz))  `.`r formatC((sum(dz)-floor(sum(dz)))*1000, digits=3,format="fg", flag="#")`... \text{ m} \approx `r round(sum(dz))  ` \text{ m} 
+\end{align}
+
+500 hPa:n painepinta on siitä kätevä, että sen korkeus on helppo muistaa: noin 5 km. 
+
+
+### b-kohta
+
+Lämmin advektio kasvattaa kerroksen keskilämpötilaa 0.1 K tunnissa, eli 2.4 K vuorokaudessa (olettaen että advektio on saman suuruinen vuorokauden ajan). Muutos lämpötilassa saadaan lopullisen ($z_{1}$) ja alkuperäisen korkeuden ($z_{0}$) erotuksena:
+
+\begin{align}
+\Delta z =& z_{1} - z_{0} =  -  \frac{R}{g} \overline{T}_1 \text{ln}\Big( \frac{`r p2[choose_p+1]  ` \text{ hPa}}{`r p1[choose_p+1]  ` \text{ hPa}} \Big)  - ( -  \frac{R}{g} \overline{T}_0 \text{ln}\Big( \frac{`r p2[choose_p+1]  ` \text{ hPa}}{`r p1[choose_p+1]  ` \text{ hPa}} \Big)  ) =  \frac{R}{g}\text{ln}\Big( \frac{`r p2[choose_p+1]  ` \text{ hPa}}{`r p1[choose_p+1]  ` \text{ hPa}} \Big)  (\overline{T}_0 - \overline{T}_1) \nonumber \\ =& 5.938... \text{ m} \approx 6 \text{ m}
+\end{align}
+
+
+Eli kerroksen korkeus kasvaa noin kuudella metrillä. 
+

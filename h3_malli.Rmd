@@ -1,0 +1,15 @@
+---
+title: 'Meteorologian ja säähavainnonteon perusteet 2017: Mallivastaukset, harjoitus
+  3'
+author: "Otso Peräkylä"
+date: "27 helmikuuta 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Tehtävä
+
+Termodynamiikan yhtälö kuvaa energian säilymistä: niinpä *Q*:n yksikköön täytyy sisältyä energian yksikkö, eli joule (J). Meteorologiassa 
