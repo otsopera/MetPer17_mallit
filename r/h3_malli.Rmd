@@ -7,9 +7,160 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message = FALSE)
 ```
 
 ## 1. Tehtävä
 
-Termodynamiikan yhtälö kuvaa energian säilymistä: niinpä *Q*:n yksikköön täytyy sisältyä energian yksikkö, eli joule (J). Meteorologiassa 
+### a-kohta
+
+Termodynamiikan yhtälö kuvaa energian säilymistä: niinpä *Q*:n yksikköön täytyy sisältyä energian yksikkö, eli joule (J). Ilmasta puhuttaessa meillä ei yleensä ole mitään määrättyä ilman määrää jota käsiteltäisiin: sen sijaan että puhutaan tietyn ilmamäärän sisältämästä kokonais-energiasta, on järkevämpää puhua energiasta massayksikköä kohti. Energiaa myös siirtyy ja muuttuu muodosta toiseen jatkuvasti. Näin ollen puhutaan energiasta myös aikayksikköä kohti, ja *Q*:n yksikkö on vastaavasti $\frac{\text{J}}{\text{kg s}}$. Tarkistetaan seuraavaksi että loppujenkin termien yksikkö on sama:
+
+\begin{equation}
+[c_v] \frac{[DT]}{[Dt]} = \frac{\text{J}}{\text{kg K}} \frac{\text{K}}{\text{s}} = \frac{\text{J}}{\text{kg s}} \qquad Q.E.D.
+\end{equation}
+
+Ensimmäisen muodon ensimmäisen termin suhteen päädyttiin siis samoihin yksiköihin. Seuraavaksi tarkistetaan ensimmäisen muodon toinen termi: 
+
+\begin{equation}
+[p] \frac{[D\alpha]}{[Dt]} = \frac{\text{N}}{\text{m}^2} \frac{\frac{\text{m}^3}{\text{kg}}}{\text{s}} = \frac{\text{N m}}{\text{kg s}} =  \frac{\text{J}}{\text{kg s}} \qquad Q.E.D.
+\end{equation}
+
+Eli samat yksiköt saatiin jälleen. Yhtälön toisen muodon yksiköt saadaan samaan tapaan: $c_p$:n yksiköt ovat samat kuin $c_v$:n, joten ensimminen termi muodostuu identtisesti. Toisessa termissä paine on muuttunut ominaistilavuuteen, ja ominaistilavuuden muutos paineen muutokseen. Koska paineella ja paineen muutoksella, kuten ominaistilavuudella ja sen muutoksellakin, on samat yksiköt, myös tästä termistä tulee samat yksiköt. 
+
+
+### b-kohta
+
+Ilmapaketin saama energia voi mennä joko sen sisäisen energian kasvattamiseen, tai ympäristöä vastaan tehtyyn työhön (useimmiten molempiin). Ilmapaketin sisäinen energia kasvaa kun sen lämpötila nousee. Paketti taas tekee työtä ympäristöään vastaan kun sen tilavuus kasvaa. Se ikään kuin työntää seiniään ulospäin, jolloin ilmapaketin aiheuttama paine (voima per pinta-ala) vaikuttaa tietyn välimatkan yli: voima kertaa välimatka = työ. Jos kaikki ilmapaketin saama energia menee ilmapaketin sisäisen energian kasvattamiseen, se ei voi tehdä työtä ympäristöään vastaan. Sen tilavuus siis pysyy vakiona. Tällöin ensimmäisen yhtälön toinen termi on nolla, koska ominaistilavuus ei muutu: 
+
+\begin{equation}
+Q = c_v \frac{DT}{Dt} + p \frac{D\alpha}{Dt} =  c_v \frac{DT}{Dt} + p \times 0 =  c_v \frac{DT}{Dt}
+\end{equation}
+
+Tämä termi kuvaa siis ilmapaketin sisäisen energian muutosta. Jos taas sisäinen energia ei muutu, lämpötila pysyy vakiona mutta tilavuus kasvaa. Tällöin jää jäljelle vain ensimmäisen yhtälön toinen termi $p \frac{D\alpha}{Dt}$: tämä kuvaa siis ympäristöä vastaan tehtyä työtä. 
+
+### c-kohta
+
+Jos ilmapaketti saa energiaa, eikä sitä vangita vakio-tilavuuteen, se sekä lämpenee että laajenee. Sen paine pysyy tässä prosessissa vakiona. Tällaista tilannetta kuvaa toisen yhtälön ensimmäinen termi $c_p \frac{DT}{Dt}$. Termiin sisältyy siis sekä sisäisen energian muutosta että ymmäristöä vastaan tehtyä työtä. Samalla tavalla yhtlön toiseen termiin $\alpha \frac{Dp}{Dt}$ sisältyy sekä ilmapaketin tekemää työtä että sisäisen energian muutosta. 
+
+
+
+## 2. tehtävä
+
+
+### a-kohta
+
+Lämpötilan-kenttä on muotoa $T(x,y) = A + By + C$sin$(kx)$, missä vakiot *A* = 273 K, *B* = -0.001 K/km ja *C* = 1 K, aaltoluku $k = 2 \pi / L$, ja aallonpituus *L* = 1000 km. Sen jakauma näyttää seuraavalta: 
+
+```{r temperature, echo=FALSE}
+
+
+A_T <- 273 # K
+B_T <- -0.001 # K/km
+C_T <- 1 # K
+L <- 1000 # km
+k <- 2*pi/L
+
+x1 <- seq(-1000,1000,5)
+y1 <- seq(-1000,1000,5)
+
+
+
+xmat <- t(matrix(x1,length(x1),length(y1)))
+ymat <- matrix(y1,length(y1),length(x1))
+zmat_T <- A_T + B_T*ymat + C_T*sin(k*xmat)
+
+
+
+library(reshape)
+
+
+y_long_vect = melt(ymat)$value;
+x_long_vect = melt(xmat)$value;
+T_long_vect = melt(zmat_T)$value;
+
+temperature_h3t3 = data.frame(x_long_vect, y_long_vect, T_long_vect) 
+
+
+
+library(ggplot2)
+library(colorspace)
+
+
+
+jet.colors <-
+  colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+                     "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
+
+
+ggplot(temperature_h3t3, aes(x=x_long_vect, y=y_long_vect)) + geom_raster(aes(fill = T_long_vect), interpolate = T) + scale_fill_gradientn(colours = jet.colors(400)) + labs(x = "X", y = "Y", fill = "T")  
+```
+
+### b-kohta
+
+Lämpötilan gradientti kertoo mihin suuntaan mentäessä lämpötila kasvaa nopeiten, ja sen kasvunopeuden. Se lasketaan seuraavasti:
+
+
+\begin{equation}
+\nabla T = (\frac{\delta}{\delta x} \textit{\^i} + \frac{\delta}{\delta y} \textit{\^j})T = (\frac{\delta T}{\delta x} \textit{\^i} + \frac{\delta T}{\delta y} \textit{\^j})
+\end{equation}
+
+Lämpötilan osittaisderivaatta x:n suhteen on 
+
+\begin{equation}
+\frac{\delta T}{\delta x} = Ck\text{cos}(kx)
+\end{equation}
+
+
+
+## 3. tehtävä
+
+```{r divergence, echo=FALSE}
+
+
+
+
+z <- c(1500,3000,5000,7000,9000,11000)
+dz <- c(1500,1500,2000,2000,2000,2000)
+diver <- c(-2,-1.2,-0.3,0.4,1.8,0.5)*1e-5
+
+dw <- -dz*diver
+w <- cumsum(dw)
+
+plot(w,z)
+
+
+
+```
+
+## Tehtävä 4
+
+
+
+```{r pressure, echo=FALSE}
+
+
+
+
+A_p <- 1000 # K
+B_p <- -0.02 # K/km
+C_p <- 10 # 
+
+
+zmat_p <- A_p + B_p*ymat + C_p*sin(k*xmat)
+
+
+
+
+
+p_long_vect = melt(zmat_p)$value;
+
+pressure_h3t3 = data.frame(x_long_vect, y_long_vect, p_long_vect) 
+
+ggplot(pressure_h3t3, aes(x=x_long_vect, y=y_long_vect)) + geom_raster(aes(fill = p_long_vect))
+
+
+
+
+
+```

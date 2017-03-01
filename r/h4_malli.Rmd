@@ -10,7 +10,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## 1. Tehtävä
+## 1. tehtävä
 
 ### a-kohta
 
@@ -67,4 +67,9 @@ Lämmin advektio kasvattaa kerroksen keskilämpötilaa 0.1 K tunnissa, eli 2.4 K vu
 
 
 Eli kerroksen korkeus kasvaa noin kuudella metrillä. 
+
+
+## 2. tehtävä
+
+
 
