@@ -93,7 +93,7 @@ jet.colors <-
                      "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
 
 
-ggplot(temperature_h3t3, aes(x=x_long_vect, y=y_long_vect)) + geom_raster(aes(fill = T_long_vect), interpolate = T) + scale_fill_gradientn(colours = jet.colors(400)) + labs(x = "X", y = "Y", fill = "T")  
+ggplot(temperature_h3t3, aes(x=x_long_vect, y=y_long_vect)) + geom_raster(aes(fill = T_long_vect), interpolate = T) + scale_fill_gradientn(colours = jet.colors(400)) + labs(x = "X (km)", y = "Y (km)", fill = "T (K)")  
 ```
 
 ### b-kohta
@@ -102,38 +102,164 @@ Lämpötilan gradientti kertoo mihin suuntaan mentäessä lämpötila kasvaa nopeiten,
 
 
 \begin{equation}
-\nabla T = (\frac{\delta}{\delta x} \textit{\^i} + \frac{\delta}{\delta y} \textit{\^j})T = (\frac{\delta T}{\delta x} \textit{\^i} + \frac{\delta T}{\delta y} \textit{\^j})
+\nabla T = (\frac{\partial}{\partial x} \textit{\^i} + \frac{\partial}{\partial y} \textit{\^j})T = \frac{\partial T}{\partial x} \textit{\^i} + \frac{\partial T}{\partial y} \textit{\^j}.
 \end{equation}
 
 Lämpötilan osittaisderivaatta x:n suhteen on 
 
 \begin{equation}
-\frac{\delta T}{\delta x} = Ck\text{cos}(kx)
+\frac{\partial T}{\partial x} = \frac{\partial }{\partial x}(A + By + C\text{sin}(kx))  = Ck\text{cos}(kx).
 \end{equation}
+
+Osittaisderivaatta y:n suhteen taas on 
+
+\begin{equation}
+\frac{\partial T}{\partial y} = \frac{\partial }{\partial y}(A + By + C\text{sin}(kx))  = B.
+\end{equation}
+
+Näin ollen lämpötilan gradientti on 
+
+\begin{equation}
+\nabla T = \frac{\partial T}{\partial x} \textit{\^i} + \frac{\partial T}{\partial y} \textit{\^j} =  Ck\text{cos}(kx) \textit{\^i} + B \textit{\^j}.
+\end{equation}
+
+Sijoittamalla x:n ja y:n arvot tähän yhtälöön saadaan gradientin arvoksi pisteessä (0,0)
+
+\begin{align}
+\nabla T(0,0) &= Ck\text{cos}(0) \textit{\^i} + B \textit{\^j} = Ck \textit{\^i} +  B \textit{\^j} = \frac{1 \text{ K}\times 2 \pi}{1000 \text{ km}} \textit{\^i}  -0.001 \text{ K/km}\textit{\^j} \nonumber \\
+&= 0.00628... \text{ K/km}\textit{\^i}-0.001 \text{ K/km}\textit{\^j} \approx 0.006 \text{ K/km}\textit{\^i}-0.001 \text{ K/km}\textit{\^j}.
+\end{align}
+
+
+Gradientti osoittaa siis noin 6 yksikköä x-akselin suuntaan, ja negatiivisen yhden yksikön y-akselin suuntaan: siis länsikaakkoon. Gradientin itseisarvo, tai pituus, voidaan laskea sen komponenttien neliöiden summan neliöjuuresta:
+
+\begin{align}
+|\nabla T(0,0)| &= \sqrt{(0.00628... \text{ K/km})^2+(-0.001 \text{ K/km})^2}  = 0.00636... \text{ K/km}  \approx 0.006 \text{ K/km}.
+\end{align}
+
+Tämä tarkoittaa, että kun lähdetään kulkemaan gradientin suuntaan (eli länsikaakkoon), kasvaa lämpötila noin 0.006 astetta kilometrissä. 
+
+Pisteessä x = 250 km gradientin arvoksi saadaan
+
+\begin{align}
+\nabla T(250 \text{ km},0) &= Ck\text{cos}(\frac{250\times 2\pi}{1000}) \textit{\^i} + B \textit{\^j} = B \textit{\^j} = -0.001 \text{ K/km}\textit{\^j}. 
+\end{align}
+
+Gradientti koostuu siis nyt vain y-komponentista, joka osoittaa suoraan etelään. Gradientin itseisarvo on suoraan y-komponentin itseisarvo:
+\begin{align}
+|\nabla T(250 \text{ km},0)| &= \sqrt{(0  \text{ K/km})^2+(-0.001 \text{ K/km})^2}  = 0.001 \text{ K/km}  .
+\end{align}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 ## 3. tehtävä
 
+### a-kohta
+
+Kun ilma konvergoi, tulee yhteen pisteeseen vaakasuunnassa enemmän ilmaa kuin siitä lähtee. Jollei ilma puristu kokoon, täytyy tämän ylimääräisen ilman virrata kuitenkin jonnekin. Se virtaa siis pystysuuntaan. Maanpinnalla on tässä tapauksessa konvergenssia, eli sinne virtaa enemmän ilmaa kuin sieltä virtaa pois. Koska ilma ei voi virrata maan pinnalta enää alaspäin, täytyy sen alkaa virrata ylöspäin. Tästä aiheutuu ylöspäin suuntautuva pystytuuli 1500 metrin korkeudessa: sen arvo voidaan laskea luentokalvoilla esillä olleesta yhtälöstä:
+
+
+
+\begin{equation}
+w(z) \approx - \int_0^z \Big( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y}  \Big)dz.
+\end{equation}
+
+Eli toisin sanoen integroidaan tuulen divergenssiä maanpinnalta kyseiselle korkeudelle asti. Pystytuulen tietyllä korkeudella vaikuttaa siis koko sen alaisen ilmapilarin divergenssi: mitä enemmän ilmaa pakkautuu alla olevaan pilariin, sitä suurempi pystynopeus tietyllä korkeudella pitää olla. Nyt meille on annettu divergenssin tarkan pystyjakauman sijasta eri ilmakerrosten keksimääräisiä divergenssejä. Koska divergenssi on integraalissa suoraan (eikä esimerkiksi divergenssin neliönä), voidaan *keskimääräinen* divergenssi ottaa integraalista ulos: 
+
+\begin{equation}
+ - \int_0^z \Big( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y}  \Big)dz = - \overline{ \Big( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y}  \Big)} \int_0^z dz = - \overline{ \Big( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y}  \Big)}(z-0).
+\end{equation}
+
+Näin voidaan laskea pystytuuli 1500 metrin korkeudella: 
+
+\begin{equation}
+w(1500 \text{ m}) =  - \overline{ \Big( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y}  \Big)}(z-0) = - (-2\times 10^{-5} \text{ s}^{-1})(1500 \text{ m} - 0 ) = 0.03\text{ m s}^{-1}.
+\end{equation}
+
+3000 metrin pystytuulen laskemiseksi tarvittaisiin ylemmän kaavan mukaisesti kerroksen 0 - 3000 m keskimääräinen divergenssi. Meillä on kuitenkin tiedossa 0 - 1500 m ja 1500 m - 3000 m divergenssit erikseen. Tätä varten voidaan pilkkoa integraali kahtia: 
+
+\begin{align}
+w(3000  \text{ m})  &= - \int_0^{3000  \text{ m}} \Big( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y}  \Big)dz = - \int_{0  \text{ m}}^{1500  \text{ m}} \Big( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y}  \Big)dz - \int_{1500  \text{ m}}^{3000  \text{ m}} \Big( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y}  \Big)dz \nonumber \\
+&= - \overline{ \Big( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y}  \Big)}_{0 - 1500  \text{ m}}(1500  \text{ m} - 0)- \overline{ \Big( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y}  \Big)}_{3000  \text{ m}-1500  \text{ m}}(3000  \text{ m} - 1500  \text{ m}) \nonumber \\
+&= (2\times 10^{-5} \text{ s}^{-1}+ 1.2\times 10^{-5} \text{ s}^{-1}) \times 1500 \text{ m} = (0.02+ 0.018)\text{ m s}^{-1} =  0.048\text{ m s}^{-1}.
+\end{align}
+
+3000 metrin pystytuuli riippuu siis koko alemman ilmakerroksen konvergenssista. Vaihtoehtoisesti voidaan ajatella, että 1500 metrin pystytuuleen lisätään 1500 m - 3000 m kerroksen konvergenssin aiheuttama pystytuuli. Samalla tavalla 5000 metrin pystytuuli voidaan laskea alempien kerrosten konvergensseista. Tulokset on esitetty alla olevassa kuvassa: pahoittelut hieman epäoptimaalisesta formaatista.
+
 ```{r divergence, echo=FALSE}
 
 
 
+height0 <- c(0,1500,3000,5000,7000,9000)
+height1 <- c(1500,3000,5000,7000,9000,11000)
+heighta = (height0 + height1)/2
 
-z <- c(1500,3000,5000,7000,9000,11000)
-dz <- c(1500,1500,2000,2000,2000,2000)
+dz <- height1 - height0
 diver <- c(-2,-1.2,-0.3,0.4,1.8,0.5)*1e-5
 
 dw <- -dz*diver
 w <- cumsum(dw)
 
-plot(w,z)
+
+
+
+
+diver1_start_arr_x <- c(-100,-100,-100,-100,-100,-100)*3e-3
+w_start_arr_x <- c(1,1,1,1,1,1)*-2e-1
+diver2_start_arr_x <- c(-100,-100,-100,-100,-100,-100)*1e-3
+
+
+
+diver1_end_arr_x = diver1_start_arr_x - diver*2e3;
+w_end_arr_x = w_start_arr_x;
+diver2_end_arr_x = diver2_start_arr_x + diver*2e3;
+
+
+
+
+w_end_arr_y = height1 + w*2e4
+
+DATA <- data.frame(height1, diver1_start_arr_x,diver1_end_arr_x,w_start_arr_x,w_end_arr_x,diver2_start_arr_x,diver2_end_arr_x,w_end_arr_y)
+
+
+
+ggplot(DATA, aes(x=w, y=height1)) + 
+  geom_point() + 
+  geom_segment(aes(x = diver1_start_arr_x, y = heighta, xend = diver1_end_arr_x, yend = heighta), data = DATA,  arrow = arrow(length = unit(0.3,"cm")),size = 2) + 
+geom_segment(aes(x = w_start_arr_x, y = height1, xend = w_end_arr_x, yend = w_end_arr_y), data = DATA,  arrow = arrow(length = unit(0.3,"cm")),size = 2) + 
+geom_segment(aes(x = diver2_start_arr_x, y = heighta, xend = diver2_end_arr_x, yend = heighta), data = DATA,  arrow = arrow(length = unit(0.3,"cm")),size = 2) +
+labs(caption = "Pystytuuli eri korkeuksilla (mustat pisteet). Nuolet kuvaavat \n divergenssiä/konvergenssia (vaakanuolet) ja pystytuulen nopeutta (pystynuolet)")
+
+
+
 
 
 
 ```
 
-## Tehtävä 4
+### c-kohta
+
+Pystynopeudet ovat tässä maksimissaan luokkaa 5 cm/s. Ukkospilvissä pystynopeudet voivat olla luokkaa 1 m/s, eli paljon voimakkaampia. Myös intertrooppisessa nousuliikkeessä nousunopeudet voivat olla kovempia (näihinkin liittyy usein ukkospilviä). Tämän tapauksen pystynopeudet voisivat vastata suurin piirtein keskileveysasteiden matalapaineiden arvoja. 
+
+## 4. tehtävä
+
+
+### a-kohta
+Paineen jakauma hahmoteltu alla:
 
 
 
@@ -157,10 +283,119 @@ p_long_vect = melt(zmat_p)$value;
 
 pressure_h3t3 = data.frame(x_long_vect, y_long_vect, p_long_vect) 
 
-ggplot(pressure_h3t3, aes(x=x_long_vect, y=y_long_vect)) + geom_raster(aes(fill = p_long_vect))
+
+jet.colors <-
+  colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+                     "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
+
+
+ggplot(pressure_h3t3, aes(x=x_long_vect, y=y_long_vect)) + geom_raster(aes(fill = p_long_vect), interpolate = T) + scale_fill_gradientn(colours = jet.colors(400)) + labs(x = "X (km)", y = "Y (km)", fill = "p (hPa)")  
 
 
 
 
 
 ```
+
+
+### b-kohta
+
+Painegradientti lasketaan aivan samalla tavalla kuin 2-tehtävässä. Vain vakioiden arvot muuttuvat. Osittaisderivaatat ovat nyt 
+
+
+\begin{equation}
+\frac{\partial p}{\partial x} = \frac{\partial }{\partial x}(A + By + C\text{sin}(kx))  = Ck\text{cos}(kx).
+\end{equation}
+
+Osittaisderivaatta y:n suhteen taas on 
+
+\begin{equation}
+\frac{\partial p}{\partial y} = \frac{\partial }{\partial y}(A + By + C\text{sin}(kx))  = B.
+\end{equation}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Näin saadaan gradientin arvoksi 
+
+
+\begin{align}
+\nabla p(0,0) &= Ck\text{cos}(0) \textit{\^i} + B \textit{\^j} = Ck \textit{\^i} +  B \textit{\^j} = \frac{10 \text{ hPa}\times 2 \pi}{1000 \text{ km}} \textit{\^i}  -0.02 \text{ hPa/km}\textit{\^j} \nonumber \\
+&= 0.0628... \text{ hPa/km}\textit{\^i}-0.02 \text{ hPa/km}\textit{\^j} \approx 0.06 \text{ hPa/km}\textit{\^i}-0.02 \text{ hPa/km}\textit{\^j},
+\end{align}
+
+ja 
+
+\begin{align}
+|\nabla p(0,0)| &= \sqrt{(0.0628... \text{ hPa/km})^2+(-0.02 \text{ hPa/km})^2}  = 0.0659... \text{ hPa/km}  \approx 0.07 \text{ hPa/km}.
+\end{align}
+
+
+Vastaavasti saadaan gradientin arvoksi pisteessä (250 km,0)
+
+\begin{align}
+\nabla p(250 \text{ km},0) &= Ck\text{cos}(\frac{250\times 2\pi}{1000}) \textit{\^i} + B \textit{\^j} = B \textit{\^j} = -0.02 \text{ hPa/km}\textit{\^j}, 
+\end{align}
+
+ja 
+
+\begin{align}
+|\nabla p(250 \text{ km},0)| &= \sqrt{(0  \text{ hPa/km})^2+(-0.02 \text{ hPa/km})^2}  = 0.02 \text{ hPa/km}  .
+\end{align}
+
+### c-kohta
+Geostrofisen tuulen x- ja y-komponentit saadaan laskettua seuraavasti:
+
+\begin{align}
+u_g &= -\frac{1}{\rho f} \frac{\partial p}{\partial y} \\
+v_g &= \frac{1}{\rho f} \frac{\partial p}{\partial x}.
+\end{align}
+
+Geostrofisen tuulen x-komponentti siis riippuu paineen y-suuntaisesta muutosnopeudesta ja päin vastoin. Paineen derivaatat x- ja y-suuntiin laskettiin jo äsken. Tarvitsemme vielä ilman tiheyden ja Coriolisparametrin *f* arvot. Ilman tiheys voidaan laskea ilman tilanyhtälöstä kun tiedetään paine ja lämpötila. Paine on annettu tehtävässä x:n ja y:n funktiona, mutta käytetään tässä vain keskimääräistä arvoa 1000 hPa. Lämpötilalle on annettu vain yksi arvo, 283 K. Tiheys lasketaan seuraavasti:
+
+
+\begin{align}
+\rho = \frac{p}{R T} = \frac{100 000 \text{ Pa}}{287.058\text{ J/(kg K)} 283 \text{K}}  = 1.230... \text{ kg m}^{-3} \approx 1.23 \text{ kg m}^{-3}.
+\end{align}
+
+Huomaa että paineen arvo on muutettu hektopascaleista pascaleihin kertomalla se sadalla, jotta saadaan yksiköksi kilogrammaa kuutiometriä kohden. Coriolisparametri *f* saadaan laskettua seuraavasti:
+
+\begin{align}
+f = 2 \Omega \text{sin}\varphi.
+\end{align}
+
+Tässä $\Omega$ on maan kiertoliikkeen (akselinsa ympäri) kulmanopeus, $\frac{2 \pi}{86400 \text{ s}}$, ja $\varphi$ on leveyspiiri jolla liike tapahtuu. Saadaan siis 
+
+\begin{align}
+f = 2 \frac{2 \pi}{86400 \text{ s}} \text{sin}(45 ^\circ \text{N}) = 1.0284...10^{-4} \text{ s}^{-1} \approx 1.02 \times 10^{-4} \text{ s}^{-1}.
+\end{align}
+
+Nyt meillä on kaikki tarvittavat komponentit geostrofisen tuulen laskemiseen. Paineen derivaatat ovat tähän mennessä olleet yksiköissä hPa/km: nyt ne pitää vielä muuntaa yksiköihin Pa/m, että saadaan vastaus metreissä sekunnissa. Saadaan geostrofisen tuulen komponenteiksi
+
+\begin{align}
+u_g &= -\frac{1}{\rho f} \frac{\partial p}{\partial y} \approx -\frac{-0.002 \text{ Pa m}^{-1}}{1.23 \text{ kg m}^{-3} \times 1.02 \times 10^{-4} \text{ s}^{-1}} \\
+v_g &= \frac{1}{\rho f} \frac{\partial p}{\partial x}\approx  \frac{10000 \text{ Pa} \frac{2\pi}{1000000 \text{ m}} \text{cos}( \frac{2\pi}{1000000 \text{ m}} x)}{1.23 \text{ kg m}^{-3}\times 1.02 \times 10^{-4} \text{ s}^{-1}} .
+\end{align}
+
+Tuulen x-komponentti on siis vakio, ja y-komponentti riippuu *x*:n arvosta. Pisteessä (0,0) saadaan tuuleksi 
+
+
+\begin{align}
+u_g &=  -\frac{-0.002 \text{ Pa m}^{-1}}{1.23 \text{ kg m}^{-3} \times 1.02 \times 10^{-4} \text{ s}^{-1}} = 15.798... \text{ m s}^{-1} \approx 16 \text{ m s}^{-1} \\
+v_g &= \frac{10000 \text{ Pa} \frac{2\pi}{1000000 \text{ m}} }{1.23 \text{ kg m}^{-3}\times 1.02 \times 10^{-4} \text{ s}^{-1}} = 49.631... \text{ m s}^{-1} \approx 50 \text{ m s}^{-1}  .
+\end{align}
+
+Näin ollen geostrofinen tuuli osoittaa pohjoiskoilliseen, paineen samanarvonkäyrän suuntaisesti. Geostrofisen tuulen itseisarvo saadaan taas komponenttien neliöiden summan neliöjuurena: tulos on noin 52 metriä sekunnissa.
+
+
+
